@@ -28,7 +28,9 @@ export class Header extends React.Component{
                         <li>Sign In</li>
                     </Link>
                 )}
-
+                <Link to={'/register'}>
+                    <li>Register</li>
+                </Link>
                 <div className="user">
                 {this.state.username}
                 </div>
