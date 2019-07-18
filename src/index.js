@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter as Router, Switch, Route, Redirect, Link} from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
 import {Header} from './Header';
 import './index.css';
 
@@ -13,19 +13,24 @@ class App extends React.Component {
         }
     }
 
+    logout(){
+        this.setState({
+            loggedIn:false
+        });
+        this.setState({
+            username:""
+        });
+    }
+
     setName(name) {
         if (this.state.loggedIn === false && name !== "") {
-            this.setState({username: name});
-            this.setState({loggedIn: true});
+            this.setState(
+                {username: name,
+                loggedIn: true});
         }
     }
 
-    componentDidMount() {
-        fetch('http://localhost:4000/users')
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(err=>console.error(err));
-    }
+
 
 
 
@@ -38,8 +43,7 @@ class App extends React.Component {
         return (
             <div>
                 <Router>
-                    <Header username={this.state.username} loggedIn={this.state.loggedIn}
-                            username={this.state.username}/>
+                    <Header username={this.state.username} loggedIn={this.state.loggedIn}/>
                     <Switch>
                         <Route path="/" exact component={Home}/>
                         <Route path="/signin" render={(props) => <SignIn {...props} loggedin={this.state.loggedIn}
@@ -77,7 +81,7 @@ class Register extends React.Component{
         event.preventDefault();
         console.log(this.state.username);
         fetch('http://localhost:4000/users/add?username='+this.state.username).catch(err=>console.error(err));
-
+        this.props.history.push('/');
     }
 
     render() {
@@ -109,21 +113,30 @@ class SignIn extends React.Component {
         this.setState({username: event.target.value});
     }
 
+    async userExists(name){
+        await fetch('http://localhost:4000/users/get?username='+name)
+            .then(response=>response.json())
+            .then(data=>{
+                console.log(data);
+                if(data.data.length===1){
+                    this.props.setName(name);
+                    this.setState({loggedIn:true});
+                    this.props.history.push('/userhome');
+                }
+                else{
+                    alert('user not found');
+                }
+            })
+            .catch(err=>console.error(err));
+    }
 
     handleSubmit(event) {
         event.preventDefault();
-        console.log(this.state.username);
-        this.props.setName(this.state.username);
-        this.setState({loggedIn: true});
+        this.userExists(this.state.username);
     }
 
 
     render() {
-        if(this.state.loggedIn){
-            return (
-                <Redirect to="/userhome"/>
-            )
-        }
         return (
             <div>
                 <h1>Sign-In</h1>
@@ -138,23 +151,30 @@ class SignIn extends React.Component {
     }
 }
 
+
 class SignedIn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             username: "",
+            users:[]
         }
     }
 
+    componentDidMount() {
+        fetch('http://localhost:4000/users')
+            .then(response => response.json())
+            .then(data =>{ this.setState({users:data.data});
+            console.log(data.data)
+            })
+            .catch(err=>console.error(err));
+    }
+
     render() {
-        // if (this.state.username === "") {
-        //     return (
-        //         <Redirect to="/"/>
-        //     )
-        // }
         return (
             <div>
-                {this.props.username}
+                <h1>{this.props.username}</h1>
+
             </div>
         )
     }
