@@ -4,9 +4,26 @@
     font: 28px "Calibri";
     margin-bottom: 10px;
 }
+Link{
+    text-decoration: none;
+}
 
 li{
+    text-decoration: none;
     list-style: none;
     color:white;
+}
 
+.username{
+    font: 14px "Calibri";
+    color:white;
+}
+
+button {
+    background:none;
+    color:white;
+    border:none;
+    padding:0;
+    font: inherit;
+    cursor: pointer;
 }

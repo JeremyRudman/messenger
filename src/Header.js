@@ -11,7 +11,10 @@ export class Header extends React.Component {
             loggedIn: false
         };
 
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
+
+
 
     componentDidUpdate(prevProps) {
         if ((prevProps.username !== this.props.username) && (prevProps.loggedIn !== this.props.loggedIn)) {
@@ -24,25 +27,35 @@ export class Header extends React.Component {
         }
     }
 
+    handleSubmit(){
+        this.props.logout();
+    }
+
     render() {
-        console.log(this.state.loggedIn);
-        console.log(this.state.username);
         return (
             <div id="Header">
-                <li>
+                <div className='username'>
                     {this.state.username}
-                </li>
-                <Link to={'/'}>
-                    <li>Home</li>
-                </Link>
+                </div>
                 {this.state.loggedIn ? (
-                    <li>Sign out</li>
+                    <Link to={'/userhome'} style={{ textDecoration: 'none' }}>
+                        <li>Home</li>
+                    </Link>
+
+                ) : (
+                    <Link to={'/'} style={{ textDecoration: 'none' }}>
+                        <li>Home</li>
+                    </Link>)}
+
+                {this.state.loggedIn ? (
+                    <button onClick={this.handleSubmit}>Sign Out</button>
+
                 ) : (
                     <div>
-                        <Link to={'/signin'}>
+                        <Link to={'/signin'} style={{ textDecoration: 'none' }}>
                             <li>Sign In</li>
                         </Link>
-                        <Link to={'/register'}>
+                        <Link to={'/register'} style={{ textDecoration: 'none' }}>
                             <li>Register</li>
                         </Link>
                     </div>
