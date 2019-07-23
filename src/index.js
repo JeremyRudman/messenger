@@ -53,7 +53,7 @@ class App extends React.Component {
                         <Route path="/register" render={(props) => <Register {...props} loggedin={this.state.loggedIn}
                                                                              username={this.state.username}
                                                                              setName={this.setName.bind(this)}/>}/>
-                        <Route path='/:handle' render={(props) => <Message {...props} loggedin={this.state.loggedIn}
+                        <Route path='/user/:handle' render={(props) => <Message {...props} loggedin={this.state.loggedIn}
                                                                             user={this.state.username}/>}/>
                     </Switch>
                 </Router>
@@ -201,7 +201,7 @@ class SignedIn extends React.Component {
 
                     <div className="user" key={user.username}>
                         <Link to={{
-                            pathname: `/${user.username}`,
+                            pathname: `/user/${user.username}`,
                             state: {
                                 toUser: user
                             }
