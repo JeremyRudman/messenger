@@ -7,7 +7,7 @@ export class Header extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: "",
+            username: null,
             loggedIn: false
         };
 
@@ -19,7 +19,7 @@ export class Header extends React.Component {
     componentDidUpdate(prevProps) {
         if ((prevProps.username !== this.props.username) && (prevProps.loggedIn !== this.props.loggedIn)) {
             this.setState({
-                username: this.props.username
+                username: this.props.username.username
             });
             this.setState({
                 loggedIn: this.props.loggedIn

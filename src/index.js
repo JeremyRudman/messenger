@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
 import {Header} from './Header';
 import './index.css';
+import {Message} from './message'
 
 class App extends React.Component {
     constructor(props) {
@@ -52,6 +53,8 @@ class App extends React.Component {
                         <Route path="/register" render={(props) => <Register {...props} loggedin={this.state.loggedIn}
                                                                              username={this.state.username}
                                                                              setName={this.setName.bind(this)}/>}/>
+                        <Route path='/:handle' render={(props) => <Message {...props} loggedin={this.state.loggedIn}
+                                                                            user={this.state.username}/>}/>
                     </Switch>
                 </Router>
             </div>
@@ -63,26 +66,26 @@ class Register extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: "",
+            name: "",
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange(event) {
-        this.setState({username: event.target.value.toLowerCase()});
+        this.setState({name: event.target.value.toLowerCase()});
     }
 
 
     handleSubmit(event) {
         event.preventDefault();
-        console.log(this.state.username);
+        console.log(this.state.name);
         //TODO CHECK IF USER EXIST THEN IF NOT ADD
-        fetch('http://localhost:4000/users/get?username=' + this.state.username)
+        fetch('http://localhost:4000/users/get?username=' + this.state.name)
             .then(response => response.json())
             .then(data => {
                 if(data.data.length===0) {
-                    fetch('http://localhost:4000/users/add?username=' + this.state.username).catch(err => console.error(err));
+                    fetch('http://localhost:4000/users/add?username=' + this.state.name).catch(err => console.error(err));
                     this.props.history.push('/');
                 }else {
                     alert('Username already registered.');
@@ -98,7 +101,7 @@ class Register extends React.Component {
             <div>
                 <h1>Register</h1>
                 <form onSubmit={this.handleSubmit}>
-                    <input type="text" value={this.state.username}
+                    <input type="text" value={this.state.name}
                            onChange={this.handleChange}/>
                     <input type="submit" value="Submit"/>
                 </form>
@@ -127,7 +130,8 @@ class SignIn extends React.Component {
             .then(response => response.json())
             .then(data => {
                 if (data.data.length === 1) {
-                    this.props.setName(name);
+                    console.log(data.data[0]);
+                    this.props.setName(data.data[0]);
                     this.setState({loggedIn: true});
                     this.props.history.push('/userhome');
                 } else {
@@ -168,15 +172,15 @@ class SignedIn extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.username !== '') {
+        if (this.props.username !== null) {
 
             fetch('http://localhost:4000/users')
                 .then(response => response.json())
                 .then(data => {
-
                     var temparray = [];
+                    console.log(this.props.username);
                     for (let i = 0; i < data.data.length; i++) {
-                        if (data.data[i].username !== this.props.username) {
+                        if (data.data[i].userID !== this.props.username.userID) {
                             temparray.push(data.data[i])
                         }
                     }
@@ -187,13 +191,22 @@ class SignedIn extends React.Component {
     }
 
     render() {
-        if(this.props.username===''){
+        console.log(this.props.username);
+        if(this.props.username===""){
             this.props.history.push('/');
         }
         const ListUsers = ({users}) => (
             <div>
                 {users.map(user => (
-                    <div className="user" key={user.username}>{user.username}</div>
+
+                    <div className="user" key={user.username}>
+                        <Link to={{
+                            pathname: `/${user.username}`,
+                            state: {
+                                toUser: user
+                            }
+                        }}>{user.username}</Link>
+                    </div>
                     ))}
             </div>
         );
